@@ -1,6 +1,7 @@
 $(function () {
+    // Do not upload to any online repository
 
-  console.log('Forum Enhancement v2.0.1 by Kadauchi');
+  console.log('Forum Enhancement v2.0.3 by Kadauchi');
 
   jQuery.extend(jQuery.fn, { within: function (pSelector) { return this.filter(function () { return $(this).closest(pSelector).length; }); } });
 
@@ -27,12 +28,9 @@ $(function () {
   // Puts images and media behind a spoiler tag
   function Media () {
     if (settings.media) {
-      var $img = $("img:not(.spoiled, .unspoiled, .mceSmilie, .mceSmilieSprite, [alt^='@'], [src*='data.istrack.in/t'])").within("div.messageContent");
-      var $media = $("iframe:not(.spoilit)").within("div.messageContent");
-
-      $('img:not(.smedia, .mceSmilie, .mceSmilieSprite, [alt^="@"], [src*="data.istrack.in/t"]), iframe').within('.messageContent').each(function () {
+      $('img:not(.smedia, .mceSmilie, .mceSmilieSprite, [alt^="@"], [src*="data.istrack.in/t"]), iframe:not(.smedia)').within('.messageContent').each(function () {
         if (!$(this).parents('.bbCodeSpoilerContainer').length) {
-          $(this).addClass('smedia').hide().before('<div class="media"><button type="button" class="media button bbCodeSpoilerButton ToggleTrigger Tooltip JsOnly spoilerbutton" data-target="> .SpoilerTarget"><span>Spoiled Image/Media</span></button></div>');
+          $(this).addClass('smedia').hide().before('<div class="media"><button type="button" class="media button"><span>Spoiled Image/Media</span></button></div>');
         }
       });
     }
@@ -60,8 +58,8 @@ $(function () {
   // Hides Masters HITs behind a spoiler tag
   function Masters () {
     if (settings.masters) {
-      $('.ctaBbcodeTable:contains(Masters has been granted):not(.master), .ctaBbcodeTable:contains(Masters Exists):not(.masters)').each(function () {
-        $(this).addClass('master').hide().before('<div class="masters"><button type="button" class="masters button bbCodeSpoilerButton Tooltip JsOnly";>Masters HIT</button></div>');
+      $('.ctaBbcodeTable:contains(Masters has been granted):not(.master), .ctaBbcodeTable:contains(Masters Exists):not(.master)').each(function () {
+        $(this).addClass('master').hide().before('<div class="masters"><button type="button" class="masters button";>Masters HIT</button></div>');
       });
     }
     else {
@@ -230,3 +228,4 @@ $(function () {
   }
 
 });
+
