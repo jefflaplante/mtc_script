@@ -1,7 +1,7 @@
-$(function () {
-    // Do not upload to any online repository
+const notified = [];
 
-  console.log('Forum Enhancement v2.0.3 by Kadauchi');
+$(function () {
+  console.log('Forum Enhancement v2.1.0 by Kadauchi');
 
   jQuery.extend(jQuery.fn, { within: function (pSelector) { return this.filter(function () { return $(this).closest(pSelector).length; }); } });
 
@@ -127,23 +127,44 @@ $(function () {
       $('.condensed, .hidecondensed').removeClass('condensed hidecondensed');
     }
   }
+  
+  for (let element of $('.messageText').children('.ctaBbcodeTable:not(.notified)')) {
+    $(element).addClass(`notified`);
+  }
 
   // Sends desktop notification and/or sound when new HITs are found
   function Notify_Sound () {
-    var currenthits = $('.messageText').children('.ctaBbcodeTable').length;
-    if (hits < currenthits) {
+    let new_hits = 0;
+    
+    for (let element of $('.messageText').children('.ctaBbcodeTable:not(.notified)')) {
+      const groupid =
+        $(element).find(`a[href*="groupId="]`).prop(`href`).match(/roupId=(.*)/) ?
+        $(element).find(`a[href*="groupId="]`).prop(`href`).match(/roupId=(.*)/)[1] :
+        null
+      ;
+      
+      $(element).addClass(`notified`);
+      
+      const is_notified = notified.indexOf(groupid) !== -1;
+      if (groupid && !is_notified) {
+        new_hits ++;
+        notified.unshift(groupid);
+        setTimeout( function () {DELAY_ALERTS.pop();}, 300000);
+      }
+    }
+
+    if (new_hits > 0) {
       if (settings.notify) {
         Notification.requestPermission();
-        var n = new Notification((currenthits - hits) + ' HIT(s) posted on MturkCrowd.com', {
-          icon : "https://www.mturk.com/media/favicon.png",
-          body : "New HITs have been posted on MTurk Crowd.",
+        const n = new Notification(`${new_hits} HIT${new_hits > 1 ? `s` : ``} posted on MturkCrowd.com`, {
+          icon : `https://www.mturk.com/media/favicon.png`,
+          body : `New HITs have been posted on MTurk Crowd.`,
         });
-        setTimeout(n.close.bind(n), 4000);
+        setTimeout(n.close.bind(n), 6000);
       }
       if (settings.sound) {
         audio.play();
       }
-      hits = currenthits;
     }
   }
 
@@ -217,7 +238,6 @@ $(function () {
   });
 
   var posts = 0;
-  var hits = $('.messageText').children('.ctaBbcodeTable').length;
 
   Pulse();
 
@@ -228,4 +248,3 @@ $(function () {
   }
 
 });
-
